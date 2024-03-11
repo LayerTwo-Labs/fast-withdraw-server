@@ -16,3 +16,7 @@ layout_mode = 0
 offset_right = 40.0
 offset_bottom = 23.0
 text = "Server Running"
+
+[node name="HTTPRequestGetBalanceMainchain" type="HTTPRequest" parent="."]
+
+[connection signal="request_completed" from="HTTPRequestGetBalanceMainchain" to="." method="_on_http_request_get_balance_mainchain_request_completed"]
