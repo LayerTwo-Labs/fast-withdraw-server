@@ -19,4 +19,13 @@ text = "Server Running"
 
 [node name="HTTPRequestGetBalanceMainchain" type="HTTPRequest" parent="."]
 
+[node name="HTTPRequestSendToAddressMainchain" type="HTTPRequest" parent="."]
+
+[node name="HTTPRequestGetTestchainAddress" type="HTTPRequest" parent="."]
+
+[node name="HTTPRequestGetTestchainTransaction" type="HTTPRequest" parent="."]
+
 [connection signal="request_completed" from="HTTPRequestGetBalanceMainchain" to="." method="_on_http_request_get_balance_mainchain_request_completed"]
+[connection signal="request_completed" from="HTTPRequestSendToAddressMainchain" to="." method="_on_http_request_send_to_address_mainchain_request_completed"]
+[connection signal="request_completed" from="HTTPRequestGetTestchainAddress" to="." method="_on_http_request_get_testchain_address_request_completed"]
+[connection signal="request_completed" from="HTTPRequestGetTestchainTransaction" to="." method="_on_http_request_get_testchain_transaction_request_completed"]
