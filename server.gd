@@ -15,7 +15,7 @@ var mainchain_balance : float = 0.0
 
 # TODO store with pending requests
 var testchain_address : String = ""
-var testchain_payment_transaction : String = ""
+var testchain_payment_transaction : Dictionary
 var mainchain_payout_txid : String = ""
 
 signal mainchain_balance_updated
@@ -108,11 +108,26 @@ func _on_fast_withdraw_invoice_paid(peer_id : int, txid : String, amount : float
 		return
 	
 	# Check if paid
+	testchain_payment_transaction.clear()
 	rpc_testchain_gettransaction(txid)
 	await received_testchain_transaction_result
 	
-	# TODO verify that transaction paid invoice amount to our L2 address
+	if testchain_payment_transaction.is_empty():
+		printerr("No payment transaction found!")
+		return
 	
+	# Verify that transaction paid invoice amount to our L2 address
+	var payment_found : bool = false
+	for output in testchain_payment_transaction["details"]:
+		print("Output:",  output)
+		if output["address"] == testchain_address and output["amount"] >= invoice_paid[2]:
+			payment_found = true
+			break
+			
+	if not payment_found:
+		printerr("Payment not found in transaction!")
+		return
+			
 	# Pay client peer and erase invoice
 	
 	rpc_mainchain_sendtoaddress(amount, destination)
@@ -211,10 +226,10 @@ func _on_http_request_get_testchain_transaction_request_completed(result: int, r
 	var res = get_result(response_code, body)
 	if res.has("result"):
 		print("Result: ", res.result)
-		testchain_payment_transaction = res.result["hex"]
+		testchain_payment_transaction = res.result
 	else:
 		print("result error")
-		testchain_payment_transaction = ""
+		testchain_payment_transaction.clear()
 		
 	received_testchain_transaction_result.emit()
 
